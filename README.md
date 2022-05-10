@@ -1,2 +1,0 @@
-# Colegiado
-Constancia colegiado activo
