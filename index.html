@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificaciones y Diplomas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 25%, #bbdefb 60%, #90caf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 85% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+                radial-gradient(circle at 50% 90%, rgba(187, 222, 251, 0.3) 0%, transparent 40%),
+                radial-gradient(circle at 70% 15%, rgba(224, 242, 254, 0.4) 0%, transparent 55%),
+                radial-gradient(circle at 30% 60%, rgba(240, 248, 255, 0.5) 0%, transparent 48%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: #1565c0;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .certificate-card {
+            grid-column: span 2;
+        }
+
+        .certificate-card:nth-child(4) {
+            grid-column: 2 / 4;
+        }
+
+        .certificate-card:nth-child(5) {
+            grid-column: 4 / 6;
+        }
+
+        @media (max-width: 1024px) {
+            .certificates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .certificate-card {
+                grid-column: span 1;
+            }
+            
+            .certificate-card:nth-child(4),
+            .certificate-card:nth-child(5) {
+                grid-column: span 1;
+            }
+        }
+
+        .certificate-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate-image-container {
+            width: 100%;
+            height: 300px;
+            background: #f5f7fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .certificate-card:hover .certificate-image-container img {
+            transform: scale(1.05);
+        }
+
+        .certificate-image-container .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-size: 4em;
+        }
+
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #667eea;
+            font-size: 1em;
+        }
+
+        .zoom-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .certificate-card:hover .zoom-icon {
+            opacity: 1;
+        }
+
+        .certificate-content {
+            padding: 25px;
+        }
+
+        .certificate-content h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .certificate-content p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+        }
+
+        /* Modal para visualización en grande */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-title {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.5em;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 30px;
+            border-radius: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+        footer {
+            text-align: center;
+            color: #1565c0;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        footer p {
+            opacity: 0.85;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .contact-info a {
+            color: #1976d2;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .certificates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .certificate-actions {
+                flex-direction: column;
+            }
+
+            .close-modal {
+                top: 10px;
+                right: 20px;
+                font-size: 30px;
+            }
+
+            .modal-content {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📜 Certificaciones y Acreditaciones</h1>
+            <p>Documentación profesional verificable</p>
+        </header>
+
+        <div class="certificates-grid">
+            <!-- Certificado 1 -->
+            <div class="certificate-card" onclick="openModal('modal1')">
+                <div class="certificate-image-container">
+                    <img 
+                        data-src="imagenes/certificado1.jpg" 
+                        alt="Título Universitario"
+                        class="lazy-load"
+                    >
+                    <div class="placeholder">🎓</div>
+                    <div class="zoom-icon">🔍 Click para ampliar</div>
+                </div>
+                <div class="certificate-content">
+                    <h3>Título Universitario</h3>
+                    <p>Licenciatura en Ingeniería Industrial - Universidad San Carlos de Guatemala</p>
+                    <div class="certificate-actions" onclick="event.stopPropagation()">
+                        <a href="imagenes/certificado1.jpg" class="btn btn-primary" target="_blank">Ver imagen</a>
+                        <a href="documentos/certificado1.pdf" class="btn btn-secondary" download>Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificado 2 -->
+            <div class="certificate-card" onclick="openModal('modal2')">
+                <div class="certificate-image-container">
+                    <img 
+                        data-src="imagenes/certificado2.jpg" 
+                        alt="Constancia Colegiado Activo"
+                        class="lazy-load"
+                    >
+                    <div class="placeholder">💼</div>
+                    <div class="zoom-icon">🔍 Click para ampliar</div>
+                </div>
+                <div class="certificate-content">
+                    <h3>Constancia Colegiado Activo</h3>
+                    <p>Colegio de Ingenieros de Guatemala</p>
+                    <div class="certificate-actions" onclick="event.stopPropagation()">
+                        <a href="imagenes/certificado2.jpg" class="btn btn-primary" target="_blank">Ver imagen</a>
+                        <a href="documentos/certificado2.pdf" class="btn btn-secondary" download>Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificado 3 -->
+            <div class="certificate-card" onclick="openModal('modal3')">
+                <div class="certificate-image-container">
+                    <img 
+                        data-src="imagenes/certificado3.jpg" 
+                        alt="Especialización OEA"
+                        class="lazy-load"
+                    >
+                    <div class="placeholder">🏆</div>
+                    <div class="zoom-icon">🔍 Click para ampliar</div>
+                </div>
+                <div class="certificate-content">
+                    <h3>Especialización OEA</h3>
+                    <p>Auditor Líder ISO28000 y OEA</p>
+                    <div class="certificate-actions" onclick="event.stopPropagation()">
+                        <a href="imagenes/certificado3.jpg" class="btn btn-primary" target="_blank">Ver imagen</a>
+                        <a href="documentos/certificado3.pdf" class="btn btn-secondary" download>Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificado 4 -->
+            <div class="certificate-card" onclick="openModal('modal4')">
+                <div class="certificate-image-container">
+                    <img 
+                        data-src="imagenes/certificado4.jpg" 
+                        alt="Especialización ISO"
+                        class="lazy-load"
+                    >
+                    <div class="placeholder">⭐</div>
+                    <div class="zoom-icon">🔍 Click para ampliar</div>
+                </div>
+                <div class="certificate-content">
+                    <h3>Especialización ISO</h3>
+                    <p>Auditor Integral Normas ISO</p>
+                    <div class="certificate-actions" onclick="event.stopPropagation()">
+                        <a href="imagenes/certificado4.jpg" class="btn btn-primary" target="_blank">Ver imagen</a>
+                        <a href="documentos/certificado4.pdf" class="btn btn-secondary" download>Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificado 5 -->
+            <div class="certificate-card" onclick="openModal('modal5')">
+                <div class="certificate-image-container">
+                    <img 
+                        data-src="imagenes/certificado5.jpg" 
+                        alt="Especialización Aduanera"
+                        class="lazy-load"
+                    >
+                    <div class="placeholder">📋</div>
+                    <div class="zoom-icon">🔍 Click para ampliar</div>
+                </div>
+                <div class="certificate-content">
+                    <h3>Especialización Aduanera</h3>
+                    <p>Agente Aduanero 354 SAT GT</p>
+                    <div class="certificate-actions" onclick="event.stopPropagation()">
+                        <a href="imagenes/certificado5.jpg" class="btn btn-primary" target="_blank">Ver imagen</a>
+                        <a href="documentos/certificado5.pdf" class="btn btn-secondary" download>Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Gracias por revisar mi perfil profesional</p>
+            <div class="contact-info">
+               <a href="mailto:tu@email.com">✉️ manologomez [arroba] alas354.com</a>
+                <a href="https://www.linkedin.com/in/mepgomez/" target="_blank">💼 LinkedIn</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modales para visualización ampliada -->
+    <div id="modal1" class="modal" onclick="closeModal('modal1')">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" src="imagenes/certificado1.jpg" alt="Título Universitario">
+        <div class="modal-title">Título Universitario</div>
+    </div>
+
+    <div id="modal2" class="modal" onclick="closeModal('modal2')">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" src="imagenes/certificado2.jpg" alt="Constancia Colegiado">
+        <div class="modal-title">Constancia Colegiado</div>
+    </div>
+
+    <div id="modal3" class="modal" onclick="closeModal('modal3')">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" src="imagenes/certificado3.jpg" alt="Especialización OEA">
+        <div class="modal-title">Especialización OEA</div>
+    </div>
+
+    <div id="modal4" class="modal" onclick="closeModal('modal4')">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" src="imagenes/certificado4.jpg" alt="Especialización ISO">
+        <div class="modal-title">Especialización ISO</div>
+    </div>
+
+    <div id="modal5" class="modal" onclick="closeModal('modal5')">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" src="imagenes/certificado5.jpg" alt="Especialización Aduanera">
+        <div class="modal-title">Especialización Aduanera</div>
+    </div>
+
+    <script>
+        // Lazy Loading de imágenes
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = document.querySelectorAll('.lazy-load');
+            
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const placeholder = img.nextElementSibling;
+                        
+                        img.src = img.dataset.src;
+                        img.onload = () => {
+                            img.style.display = 'block';
+                            if (placeholder && placeholder.classList.contains('placeholder')) {
+                                placeholder.style.display = 'none';
+                            }
+                        };
+                        
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            lazyImages.forEach(img => imageObserver.observe(img));
+        });
+
+        // Funciones para el modal
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.modal.active');
+                modals.forEach(modal => {
+                    modal.classList.remove('active');
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
